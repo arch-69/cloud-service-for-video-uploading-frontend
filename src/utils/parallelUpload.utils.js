@@ -19,17 +19,32 @@ export const uploadChunksInParallel =
     waitForResume,  
     signal,
     loadChunk,
+    parallelism,
+    maxParallelism,
+    onThroughputSample,
   }) => {
 
     const uploadedParts = [];
 
     let index = 0;
 
-    const worker = async () => {
+    let currentParallelism = Math.max(1, parallelism || MAX_PARALLEL_UPLOADS);
+    const maxAllowed = Math.max(1, maxParallelism || MAX_PARALLEL_UPLOADS);
+
+    const updateParallelism = (next) => {
+      if (!Number.isFinite(next)) return;
+      const clamped = Math.max(1, Math.min(maxAllowed, next));
+      currentParallelism = clamped;
+    };
+
+    const worker = async (workerId) => {
 
       while (
         index < chunks.length
       ) {
+        if (workerId >= currentParallelism) {
+          return;
+        }
 
         const currentIndex =
           index++;
@@ -57,6 +72,7 @@ export const uploadChunksInParallel =
             throw new Error("Chunk not found");
           }
 
+          const startTime = performance?.now?.() || Date.now();
           const uploadedPart =
             await uploadChunkService({
               chunk: chunkBlob,
@@ -68,6 +84,21 @@ export const uploadChunksInParallel =
               onProgress,
               signal,
             });
+          const endTime = performance?.now?.() || Date.now();
+          const durationMs = Math.max(1, endTime - startTime);
+          const bytes = chunkBlob.size || 0;
+          const mbps = bytes ? (bytes * 8) / (durationMs * 1000) : 0;
+
+          if (onThroughputSample) {
+            const suggested = onThroughputSample({
+              bytes,
+              durationMs,
+              mbps,
+              currentParallelism,
+              maxParallelism: maxAllowed,
+            });
+            updateParallelism(suggested);
+          }
 
           uploadedParts.push(uploadedPart);
           onPartComplete?.(
@@ -86,10 +117,10 @@ export const uploadChunksInParallel =
     };
 
     const workers = Array(
-      MAX_PARALLEL_UPLOADS
+      currentParallelism
     )
       .fill(null)
-      .map(() => worker());
+      .map((_, idx) => worker(idx));
 
     await Promise.all(workers);
 

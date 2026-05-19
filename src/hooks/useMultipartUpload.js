@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { createChunks } from "../utils/chunk.utils";
 
 import { uploadChunksInParallel } from "../utils/parallelUpload.utils";
+import { MAX_PARALLEL_UPLOADS } from "../constants/upload.constants";
 
 import {
   startMultipartUploadApi,
@@ -18,6 +19,8 @@ export const useMultipartUpload = () => {
 
   const [error, setError] = useState(null);
 
+  const [bitrateHistory, setBitrateHistory] = useState([]);
+
 
   const [isPaused, setIsPaused] = useState(false);
 
@@ -27,9 +30,23 @@ export const useMultipartUpload = () => {
 
   const chunksRef = useRef([]);
 
+  const chunkSizeRef = useRef(null);
+
   const completedPartsRef = useRef([]);
 
   const uploadMetaRef = useRef(null);
+  const parallelRef = useRef(Math.min(3, MAX_PARALLEL_UPLOADS));
+  const avgMbpsRef = useRef(0);
+
+  const resolveChunkSize = (fileSize) => {
+    // auto-tune chunk size based on previous upload throughput
+    const lastMbps = Number(window?.localStorage?.getItem('cloud_last_upload_mbps') || 0);
+    if (lastMbps >= 40) return 16 * 1024 * 1024;
+    if (lastMbps >= 20) return 10 * 1024 * 1024;
+    if (lastMbps >= 10) return 8 * 1024 * 1024;
+    if (fileSize > 1024 * 1024 * 500) return 8 * 1024 * 1024; // large files
+    return 5 * 1024 * 1024;
+  };
 
   const startUpload = async ({ chunks, uploadId, key, fileType }) => {
     abortControllerRef.current = new AbortController();
@@ -70,6 +87,39 @@ export const useMultipartUpload = () => {
 
       signal: abortControllerRef.current.signal,
 
+      parallelism: parallelRef.current,
+      maxParallelism: MAX_PARALLEL_UPLOADS,
+
+      onThroughputSample: ({ mbps, currentParallelism, maxParallelism }) => {
+        if (!mbps) return currentParallelism;
+        // exponential moving average
+        avgMbpsRef.current = avgMbpsRef.current
+          ? avgMbpsRef.current * 0.8 + mbps * 0.2
+          : mbps;
+
+        // store history for UI
+        setBitrateHistory((prev) => {
+          const next = [...prev, Math.round(avgMbpsRef.current)];
+          return next.slice(-25);
+        });
+
+        // adaptive parallelism: scale with bandwidth
+        let nextParallel = currentParallelism;
+        if (avgMbpsRef.current > 30 && currentParallelism < maxParallelism) {
+          nextParallel = currentParallelism + 1;
+        } else if (avgMbpsRef.current < 6 && currentParallelism > 2) {
+          nextParallel = currentParallelism - 1;
+        }
+
+        parallelRef.current = nextParallel;
+        try {
+          window?.localStorage?.setItem('cloud_last_upload_mbps', String(Math.round(avgMbpsRef.current)));
+        } catch {
+          // ignore
+        }
+        return nextParallel;
+      },
+
       onPartComplete: (part) => {
   completedPartsRef.current.push(part);
 
@@ -108,11 +158,15 @@ export const useMultipartUpload = () => {
 
       setProgress(0);
 
+      setBitrateHistory([]);
+
       setStatus("STARTING");
 
       completedPartsRef.current = [];
 
-      const chunks = createChunks(file);
+  const chunkSize = resolveChunkSize(file.size);
+  chunkSizeRef.current = chunkSize;
+  const chunks = createChunks(file, chunkSize);
 
       chunksRef.current = chunks;
 
@@ -130,6 +184,7 @@ export const useMultipartUpload = () => {
         uploadId,
         key,
         fileType: file.type,
+        chunkSize,
       };
 
       setCurrentUpload({
@@ -233,6 +288,8 @@ export const useMultipartUpload = () => {
     error,
 
   uploadedParts: [],
+
+    bitrateHistory,
 
     currentUpload,
 

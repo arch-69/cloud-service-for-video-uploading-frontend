@@ -3,7 +3,8 @@ import {
 } from "../constants/upload.constants";
 
 export const createChunks = (
-  file
+  file,
+  chunkSizeOverride
 ) => {
 
   const chunks = [];
@@ -11,10 +12,12 @@ export const createChunks = (
   let start = 0;
   let partNumber = 1;
 
+  const chunkSize = chunkSizeOverride || CHUNK_SIZE;
+
   while (start < file.size) {
 
     const end = Math.min(
-      start + CHUNK_SIZE,
+      start + chunkSize,
       file.size
     );
 
