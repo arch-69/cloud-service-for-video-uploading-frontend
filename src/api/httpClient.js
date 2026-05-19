@@ -53,6 +53,33 @@ httpClient.interceptors.response.use(
     const originalConfig = error.config;
     if (!originalConfig) return Promise.reject(error);
 
+    // Handle blocked services (403) with a global event so UI can show a message
+    if (error.response?.status === 403) {
+      try {
+        const message = error.response?.data?.message || 'Service is currently unavailable.';
+        if (typeof window !== 'undefined') {
+          try {
+            window.sessionStorage.setItem('cloud_service_alert', JSON.stringify({
+              message,
+              ts: Date.now(),
+            }));
+          } catch {
+            // ignore
+          }
+          window.dispatchEvent(new CustomEvent('service:blocked', {
+            detail: {
+              message,
+              status: 403,
+              url: originalConfig?.url || ''
+            }
+          }));
+        }
+      } catch {
+        // ignore
+      }
+      return Promise.reject(error);
+    }
+
     // If it's not a 401, just forward the error
     if (error.response?.status !== 401) {
       return Promise.reject(error);

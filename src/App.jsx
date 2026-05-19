@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import "./App.css";
 import AuthPanel from "./components/auth/AuthPanel";
 import Header from "./components/layout/Header";
@@ -20,6 +21,8 @@ function App() {
   const [currentPath, setCurrentPath] = useState(() =>
     typeof window !== 'undefined' ? window.location.pathname : '/'
   );
+  const [serviceAlert, setServiceAlert] = useState(null);
+  const [servicePopup, setServicePopup] = useState(null);
 
   useEffect(() => {
     const handleRoute = () => {
@@ -35,6 +38,44 @@ function App() {
     handleRoute();
     window.addEventListener('popstate', handleRoute);
     return () => window.removeEventListener('popstate', handleRoute);
+  }, []);
+
+  useEffect(() => {
+    // read persisted alert in case it fired before App mounted
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = window.sessionStorage.getItem('cloud_service_alert');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.message) {
+              const payload = { id: parsed.ts || Date.now(), message: parsed.message };
+              setServiceAlert(payload);
+              setServicePopup(payload);
+            }
+            window.sessionStorage.removeItem('cloud_service_alert');
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }, 0);
+
+    const handler = (ev) => {
+      const message = ev?.detail?.message || 'Service is currently unavailable.';
+      const payload = { id: Date.now(), message };
+      setServiceAlert(payload);
+      setServicePopup(payload);
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('service:blocked', handler);
+    }
+    return () => {
+      clearTimeout(timer);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('service:blocked', handler);
+      }
+    };
   }, []);
   const [activeView, setActiveView] = useState("dashboard");
   const [theme, setTheme] = useState(() =>
@@ -138,6 +179,56 @@ function App() {
             )
           }
         />
+
+        {serviceAlert?.message && (
+          <div className="service-alert" role="alert">
+            <div className="service-alert__content">
+              <div className="service-alert__icon">
+                <AlertTriangle size={18} />
+              </div>
+              <div>
+                <p className="service-alert__title">Service temporarily unavailable</p>
+                <p className="service-alert__message">{serviceAlert.message}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ghost-button service-alert__dismiss"
+              onClick={() => setServiceAlert(null)}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {servicePopup?.message && (
+          <div className="service-popup" role="dialog" aria-modal="true">
+            <div className="service-popup__card">
+              <div className="service-popup__header">
+                <div>
+                  <p className="service-popup__title">Action blocked</p>
+                  <p className="service-popup__message">{servicePopup.message}</p>
+                </div>
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => setServicePopup(null)}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="service-popup__footer">
+                <button
+                  className="primary-button"
+                  onClick={() => setServicePopup(null)}
+                >
+                  Okay
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section className="app-content">
           {routeVideoKey ? (
