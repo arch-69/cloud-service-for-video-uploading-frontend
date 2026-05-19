@@ -18,7 +18,6 @@ export const useMultipartUpload = () => {
 
   const [error, setError] = useState(null);
 
-  const [uploadedParts, setUploadedParts] = useState([]);
 
   const [isPaused, setIsPaused] = useState(false);
 
@@ -55,8 +54,7 @@ export const useMultipartUpload = () => {
     });
 
     const mergedCompletedParts = Array.from(partsByNumber.values()).sort((a, b) => a.PartNumber - b.PartNumber);
-    completedPartsRef.current = mergedCompletedParts;
-    setUploadedParts([...mergedCompletedParts]);
+  completedPartsRef.current = mergedCompletedParts;
 
     const uploadedPartNumbers = new Set(mergedCompletedParts.map((part) => part.PartNumber));
     const remainingChunks = chunks.filter((chunk) => !uploadedPartNumbers.has(chunk.partNumber));
@@ -73,9 +71,7 @@ export const useMultipartUpload = () => {
       signal: abortControllerRef.current.signal,
 
       onPartComplete: (part) => {
-        completedPartsRef.current.push(part);
-
-        setUploadedParts([...completedPartsRef.current]);
+  completedPartsRef.current.push(part);
 
         const nextProgress = Math.round(
           (completedPartsRef.current.length / chunks.length) * 100,
@@ -113,8 +109,6 @@ export const useMultipartUpload = () => {
       setProgress(0);
 
       setStatus("STARTING");
-
-      setUploadedParts([]);
 
       completedPartsRef.current = [];
 
@@ -238,7 +232,7 @@ export const useMultipartUpload = () => {
 
     error,
 
-    uploadedParts,
+  uploadedParts: [],
 
     currentUpload,
 

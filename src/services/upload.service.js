@@ -6,7 +6,6 @@ import {
 
 import {
   getSignedUrlApi,
-  saveUploadedPartApi,
 } from "../api/upload.api";
 
 export const uploadChunkService =
@@ -63,12 +62,6 @@ export const uploadChunkService =
     }
 
     const cleanedEtag = etag;
-
-    await saveUploadedPartApi({
-      uploadId,
-      partNumber,
-      etag: cleanedEtag,
-    });
 
     onProgress?.();
 
