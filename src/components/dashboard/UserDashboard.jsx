@@ -1,7 +1,7 @@
 import StatCard from "../shared/StatCard";
 import UploadPanel from "../upload/UploadPanel";
 import UploadList from "../upload/UploadList";
-import { formatBytes } from "../../utils/format.utils";
+import { capitalize, formatBytes, formatDateTime } from "../../utils/format.utils";
 
 export default function UserDashboard({
   records,
@@ -9,6 +9,9 @@ export default function UserDashboard({
   uploadControls,
   isLoading,
   onRefresh,
+  currentPlan,
+  planLoading,
+  planError,
 }) {
   const completed = records.filter(
     (record) => record.status === "COMPLETED"
@@ -53,6 +56,16 @@ export default function UserDashboard({
   });
   const maxTrend = Math.max(...trend.map((t) => t.count), 1);
 
+  const planName = currentPlan?.plan?.name
+    ? capitalize(currentPlan.plan.name)
+    : "No plan";
+  const planStatus = currentPlan?.status || "INACTIVE";
+  const isActivePlan = planStatus === "ACTIVE" || planStatus === "TRIALING";
+  const storageLimit = currentPlan?.plan?.storageLimit ?? 0;
+  const bandwidthLimit = currentPlan?.plan?.bandwidthLimit ?? 0;
+  const maxFileSize = currentPlan?.plan?.maxFileSize ?? 0;
+  const monthlyPrice = currentPlan?.plan?.monthlyPrice ?? 0;
+
   return (
     <div className="dashboard-grid">
       <div className="stat-grid">
@@ -95,6 +108,66 @@ export default function UserDashboard({
           value={formatBytes(largestFile)}
           hint="Top upload"
         />
+      </div>
+
+      <div className="card plan-card">
+        <div className="plan-card__header">
+          <div>
+            <p className="muted small">Current subscription</p>
+            <h3>{planName}</h3>
+            <p className="muted small">Status: {planStatus}</p>
+          </div>
+          <span className={`status-pill ${isActivePlan ? "" : "FAILED"}`}>
+            {isActivePlan ? "Active" : "Inactive"}
+          </span>
+        </div>
+
+        {planLoading && <p className="muted">Loading plan details…</p>}
+        {planError && <p className="muted">{planError}</p>}
+
+        {currentPlan && (
+          <div className="plan-card__grid">
+            <div>
+              <p className="muted small">Storage limit</p>
+              <strong>{storageLimit} GB</strong>
+            </div>
+            <div>
+              <p className="muted small">Bandwidth limit</p>
+              <strong>{bandwidthLimit} GB</strong>
+            </div>
+            <div>
+              <p className="muted small">Max file size</p>
+              <strong>{maxFileSize} MB</strong>
+            </div>
+            <div>
+              <p className="muted small">Monthly price</p>
+              <strong>₹{monthlyPrice}</strong>
+            </div>
+            <div>
+              <p className="muted small">Started</p>
+              <strong>{formatDateTime(currentPlan.startedAt)}</strong>
+            </div>
+            <div>
+              <p className="muted small">Expires</p>
+              <strong>{formatDateTime(currentPlan.expiresAt)}</strong>
+            </div>
+          </div>
+        )}
+
+        {!currentPlan && !planLoading && (
+          <div className="plan-card__empty">
+            <p className="muted">No active subscription found.</p>
+            <button
+              className="primary-button"
+              onClick={() => {
+                window.history.pushState({}, '', '/pricing');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
+              Choose a plan
+            </button>
+          </div>
+        )}
       </div>
 
       <UploadPanel {...uploadControls} currentUpload={currentUpload} />

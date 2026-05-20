@@ -12,7 +12,12 @@ function formatPrice(price, period) {
   return `₹${price}/mo`;
 }
 
-export default function Pricing() {
+export default function Pricing({
+  currentPlan,
+  planLoading,
+  planError,
+  onRefreshCurrentPlan,
+}) {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -80,6 +85,13 @@ export default function Pricing() {
     setPaymentError(null);
     setPayingPlanId(plan._id);
 
+    const isSubscribed = currentPlan?.status === 'ACTIVE' || currentPlan?.status === 'TRIALING';
+    if (isSubscribed) {
+      setPaymentError('You already have an active subscription. Manage your plan in billing.');
+      setPayingPlanId(null);
+      return;
+    }
+
     try {
       const key = (import.meta.env?.VITE_RAZORPAY_KEY || '').trim();
       if (!key) throw new Error('Razorpay key is missing');
@@ -115,7 +127,12 @@ export default function Pricing() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
-      setPaymentError(err?.message || 'Payment initialization failed');
+      if (err?.response?.status === 409) {
+        setPaymentError('You already have an active subscription. Manage your plan in billing.');
+        onRefreshCurrentPlan?.();
+      } else {
+        setPaymentError(err?.message || 'Payment initialization failed');
+      }
     } finally {
       setPayingPlanId(null);
     }
@@ -123,6 +140,9 @@ export default function Pricing() {
 
   if (loading) return <div className="card">Loading plans…</div>;
   if (error) return <div className="card">Error loading plans: {error}</div>;
+
+  const isSubscribed = currentPlan?.status === 'ACTIVE' || currentPlan?.status === 'TRIALING';
+  const currentPlanId = currentPlan?.plan?._id;
 
   return (
     <div className="card pricing-panel">
@@ -144,9 +164,45 @@ export default function Pricing() {
         </div>
       )}
 
+      {planError && (
+        <div className="card" style={{ marginBottom: 12, borderLeft: '4px solid #f59e0b' }}>
+          {planError}
+        </div>
+      )}
+
+      {planLoading && (
+        <div className="card" style={{ marginBottom: 12 }}>
+          Loading your current plan…
+        </div>
+      )}
+
+      {isSubscribed && currentPlan && (
+        <div className="card current-plan-banner">
+          <div>
+            <h4>Current plan: {currentPlan.plan?.name || 'Active plan'}</h4>
+            <p className="muted small">
+              Status: {currentPlan.status} • Expires on {new Date(currentPlan.expiresAt).toLocaleDateString()}
+            </p>
+          </div>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => {
+              window.history.pushState({}, '', '/billing');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Manage billing
+          </button>
+        </div>
+      )}
+
       <div className="pricing-grid" style={{ marginTop: 16 }}>
         {plans.map((plan) => (
-          <div key={plan._id} className="card pricing-card">
+          <div
+            key={plan._id}
+            className={`card pricing-card ${isSubscribed ? 'pricing-card--disabled' : ''} ${currentPlanId === plan._id ? 'pricing-card--current' : ''}`}
+          >
 
             <div className="pricing-card__head">
               <div>
@@ -170,9 +226,15 @@ export default function Pricing() {
               <button
                 className="primary-button"
                 onClick={() => handleBuy(plan)}
-                disabled={payingPlanId === plan._id}
+                disabled={payingPlanId === plan._id || isSubscribed}
               >
-                {payingPlanId === plan._id ? 'Starting...' : `Buy ${plan.monthlyPrice === 0 ? 'Free' : ''}`}
+                {currentPlanId === plan._id && isSubscribed
+                  ? 'Current plan'
+                  : payingPlanId === plan._id
+                  ? 'Starting...'
+                  : isSubscribed
+                  ? 'Subscribed'
+                  : `Buy ${plan.monthlyPrice === 0 ? 'Free' : ''}`}
               </button>
               <button className="secondary-button" onClick={() => {
                 window.history.pushState({}, '', '/support');

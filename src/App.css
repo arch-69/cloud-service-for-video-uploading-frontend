@@ -392,6 +392,39 @@
   gap: 12px;
 }
 
+.plan-card {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plan-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-card__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.plan-card__empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+}
+
 .chart-bars {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -526,6 +559,23 @@
 .pricing-card {
   position: relative;
   padding: 12px;
+}
+
+.pricing-card--disabled {
+  opacity: 0.6;
+}
+
+.pricing-card--current {
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.08);
+}
+
+.current-plan-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-left: 4px solid var(--accent);
 }
 
 .pricing-card.recommended {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import "./App.css";
 import AuthPanel from "./components/auth/AuthPanel";
@@ -15,6 +15,7 @@ import Pricing from "./components/pricing/Pricing";
 import { useAuth } from "./hooks/useAuth";
 import { useUploadRecords } from "./hooks/useUploadRecords";
 import { useMultipartUpload } from "./hooks/useMultipartUpload";
+import { getCurrentPlanApi } from "./api/razorpay.api";
 
 function App() {
   const [routeVideoKey, setRouteVideoKey] = useState(null);
@@ -23,6 +24,9 @@ function App() {
   );
   const [serviceAlert, setServiceAlert] = useState(null);
   const [servicePopup, setServicePopup] = useState(null);
+  const [currentPlan, setCurrentPlan] = useState(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [planError, setPlanError] = useState(null);
 
   useEffect(() => {
     const handleRoute = () => {
@@ -118,6 +122,47 @@ function App() {
     bitrateHistory: uploadControls.bitrateHistory,
     error: uploadControls.error,
   };
+
+  const refreshCurrentPlan = useCallback(async () => {
+    if (!user) {
+      setCurrentPlan(null);
+      return;
+    }
+    setPlanLoading(true);
+    setPlanError(null);
+    try {
+      const response = await getCurrentPlanApi();
+      if (response?.success) {
+        setCurrentPlan(response.data || null);
+      } else {
+        setCurrentPlan(null);
+        setPlanError(response?.message || "Failed to fetch current plan");
+      }
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        setCurrentPlan(null);
+      } else {
+        setPlanError(
+          err?.response?.data?.message ||
+            err?.message ||
+            "Failed to fetch current plan"
+        );
+      }
+    } finally {
+      setPlanLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!user) {
+        setCurrentPlan(null);
+        return;
+      }
+      refreshCurrentPlan();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [refreshCurrentPlan, user]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -234,7 +279,12 @@ function App() {
           {routeVideoKey ? (
             <VideoPlayer keyId={routeVideoKey} />
           ) : currentPath === '/pricing' ? (
-            <Pricing />
+            <Pricing
+              currentPlan={currentPlan}
+              planLoading={planLoading}
+              planError={planError}
+              onRefreshCurrentPlan={refreshCurrentPlan}
+            />
           ) : activeView === "dashboard" && (
             user.role === "admin" ? (
               <AdminDashboard
@@ -250,6 +300,9 @@ function App() {
                 uploadControls={uploadPanelProps}
                 isLoading={isLoading}
                 onRefresh={refresh}
+                currentPlan={currentPlan}
+                planLoading={planLoading}
+                planError={planError}
               />
             )
           )}
