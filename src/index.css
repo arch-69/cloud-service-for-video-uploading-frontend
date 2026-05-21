@@ -17,6 +17,7 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --shadow: 0 18px 45px #0b0d1466;
+  --btn-shadow-color: rgba(255, 255, 255, 0.14);
   --radius: 18px;
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   color: var(--text);
@@ -37,6 +38,7 @@
   --accent-strong: #1648d4;
   --accent-soft: #1f5eff1a;
   --shadow: 0 12px 30px #11182714;
+  --btn-shadow-color: rgba(17, 24, 39, 0.12);
 }
 
 * {
@@ -77,4 +79,10 @@ textarea {
 
 .muted.small {
   font-size: 0.85rem;
+}
+
+.btn-soft-shadow {
+  box-shadow: 0 10px 14px -10px var(--btn-shadow-color),
+    -6px 0 12px -10px var(--btn-shadow-color),
+    6px 0 12px -10px var(--btn-shadow-color);
 }
