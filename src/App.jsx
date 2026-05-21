@@ -12,6 +12,7 @@ import UploadList from "./components/upload/UploadList";
 import ActivityFeed from "./components/shared/ActivityFeed";
 import VideoPlayer from "./components/upload/VideoPlayer";
 import Pricing from "./components/pricing/Pricing";
+import ModernDashboard from "./components/dashboard/ModernDashboard";
 import { useAuth } from "./hooks/useAuth";
 import { useUploadRecords } from "./hooks/useUploadRecords";
 import { useMultipartUpload } from "./hooks/useMultipartUpload";
@@ -82,6 +83,7 @@ function App() {
     };
   }, []);
   const [activeView, setActiveView] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState(() =>
     window.localStorage.getItem("cloud_theme") || "dark"
   );
@@ -206,18 +208,29 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
- <Sidebar     
+    <div className="min-h-screen bg-ink text-white">
+      <Sidebar
         activeView={activeView}
         onNavigate={setActiveView}
         role={user.role}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="app-main">
+      {sidebarOpen && (
+        <button
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close sidebar"
+        />
+      )}
+
+      <main className="min-h-screen bg-ink lg:ml-72">
         <Header
           user={user}
           onLogout={logout}
           theme={theme}
+          onOpenSidebar={() => setSidebarOpen(true)}
           onToggleTheme={() =>
             setTheme((prev) =>
               prev === "dark" ? "light" : "dark"
@@ -275,7 +288,7 @@ function App() {
           </div>
         )}
 
-        <section className="app-content">
+  <section className="px-6 pb-10">
           {routeVideoKey ? (
             <VideoPlayer keyId={routeVideoKey} />
           ) : currentPath === '/pricing' ? (
@@ -285,49 +298,35 @@ function App() {
               planError={planError}
               onRefreshCurrentPlan={refreshCurrentPlan}
             />
-          ) : activeView === "dashboard" && (
-            user.role === "admin" ? (
-              <AdminDashboard
-                records={records}
-                activities={activities}
-                users={users}
-              />
-            ) : (
-              <UserDashboard
-                records={userRecords}
-                activities={scopedActivities}
-                currentUpload={uploadControls.currentUpload}
-                uploadControls={uploadPanelProps}
-                isLoading={isLoading}
-                onRefresh={refresh}
-                currentPlan={currentPlan}
-                planLoading={planLoading}
-                planError={planError}
-              />
-            )
-          )}
-
-          {activeView === "uploads" && (
-            <div className="dashboard-grid">
+          ) : activeView === "dashboard" ? (
+            <ModernDashboard user={user} />
+          ) : activeView === "uploads" ? (
+            <div className="grid gap-6 lg:grid-cols-2">
               <UploadPanel {...uploadPanelProps} />
               <UploadList records={userRecords} title="Upload history" />
             </div>
-          )}
-
-          {activeView === "activity" && (
+          ) : activeView === "activity" ? (
             <ActivityFeed activities={scopedActivities} />
-          )}
-
-          {activeView === "admin" && user.role === "admin" && (
+          ) : activeView === "admin" && user.role === "admin" ? (
             <AdminDashboard
               records={records}
               activities={activities}
               users={users}
             />
-          )}
-
-          {activeView === "settings" && (
+          ) : activeView === "settings" ? (
             <SettingsPanel user={user} />
+          ) : (
+            <UserDashboard
+              records={userRecords}
+              activities={scopedActivities}
+              currentUpload={uploadControls.currentUpload}
+              uploadControls={uploadPanelProps}
+              isLoading={isLoading}
+              onRefresh={refresh}
+              currentPlan={currentPlan}
+              planLoading={planLoading}
+              planError={planError}
+            />
           )}
         </section>
       </main>
