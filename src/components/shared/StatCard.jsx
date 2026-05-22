@@ -29,36 +29,37 @@ export default function StatCard({
       : Minus;
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111827]/70 p-5 backdrop-blur-xl transition-all duration-300 hover:border-white/15 hover:bg-[#141c2b]/80">
+    <div className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-[#111827]/70 p-3 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-white/15 hover:bg-[#141c2b]/80">
       {/* Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.14),transparent_45%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       {/* Header */}
-      <div className="relative z-10 flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/40">
+      <div className="relative z-10 flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
+          <p className="text-[9px] sm:text-[11px] font-medium uppercase tracking-[0.14em] text-white/40">
             {label}
           </p>
         </div>
 
         {trend && (
           <span
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-semibold ${trendStyles[trend.type] || trendStyles.neutral}`}
+            className={`inline-flex shrink-0 items-center gap-0.5 sm:gap-1 rounded-full border px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-semibold ${trendStyles[trend.type] || trendStyles.neutral}`}
           >
-            <TrendIcon size={11} />
-            {trend.text}
+            <TrendIcon size={10} />
+            <span className="hidden sm:inline">{trend.text}</span>
+            <span className="sm:hidden">{trend.text?.slice(0, 3)}</span>
           </span>
         )}
       </div>
 
       {/* Value */}
-      <div className="relative z-10 mt-4">
-        <h3 className="text-[24px] font-semibold tracking-tight text-white">
+      <div className="relative z-10 mt-2 sm:mt-4">
+        <h3 className="text-lg sm:text-[24px] font-semibold tracking-tight text-white truncate">
           {value}
         </h3>
 
         {hint && (
-          <p className="mt-1 text-[11px] text-white/45">
+          <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[11px] text-white/45 truncate">
             {hint}
           </p>
         )}

@@ -5,7 +5,6 @@ import {
   Crown,
   Sparkles,
   ShieldCheck,
-  Rocket,
   ArrowRight,
   Loader2,
 } from "lucide-react";
@@ -249,7 +248,7 @@ export default function Pricing({
 
   if (loading) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-[#060B16]/95 p-6 text-[11px] text-white/50 backdrop-blur-2xl">
+      <div className="rounded-2xl sm:rounded-3xl border border-white/10 bg-[#060B16]/95 p-4 sm:p-6 text-[10px] sm:text-[11px] text-white/50 backdrop-blur-2xl">
         Loading plans...
       </div>
     );
@@ -257,7 +256,7 @@ export default function Pricing({
 
   if (error) {
     return (
-      <div className="rounded-3xl border border-red-500/20 bg-red-500/[0.04] p-6 text-[11px] text-red-200 backdrop-blur-2xl">
+      <div className="rounded-2xl sm:rounded-3xl border border-red-500/20 bg-red-500/[0.04] p-4 sm:p-6 text-[10px] sm:text-[11px] text-red-200 backdrop-blur-2xl">
         Error loading plans: {error}
       </div>
     );
@@ -272,24 +271,24 @@ export default function Pricing({
     currentPlan?.plan?._id;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#060B16]/95 p-6 backdrop-blur-2xl">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-[#060B16]/95 p-4 sm:p-6 backdrop-blur-2xl">
         <div className="absolute right-0 top-0 h-52 w-52 rounded-full bg-indigo-500/10 blur-3xl" />
 
-        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-[11px] text-indigo-200">
+        <div className="relative flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-indigo-200">
               <Sparkles size={14} />
 
               Premium Cloud Plans
             </div>
 
-            <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-white">
+            <h2 className="mt-2 sm:mt-3 text-xl sm:text-2xl lg:text-[28px] font-semibold tracking-tight text-white">
               Plans & Pricing
             </h2>
 
-            <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-white/45">
+            <p className="mt-1 sm:mt-2 max-w-2xl text-[9.5px] sm:text-[11px] leading-relaxed text-white/45">
               Scalable storage and
               bandwidth plans for modern
               upload workloads.
@@ -297,12 +296,12 @@ export default function Pricing({
           </div>
 
           {/* Toggle */}
-          <div className="flex rounded-2xl border border-white/10 bg-white/[0.03] p-1">
+          <div className="flex rounded-2xl border border-white/10 bg-white/[0.03] p-1 shrink-0 w-full sm:w-auto">
             <button
               onClick={() =>
                 setPeriod("monthly")
               }
-              className={`rounded-xl px-5 py-2.5 text-[11px] font-medium transition ${
+              className={`rounded-xl px-3 sm:px-5 py-2 sm:py-2.5 text-[10px] sm:text-[11px] font-medium transition flex-1 sm:flex-none ${
                 period === "monthly"
                   ? "bg-white text-black"
                   : "text-white/50 hover:text-white"
@@ -315,7 +314,7 @@ export default function Pricing({
               onClick={() =>
                 setPeriod("yearly")
               }
-              className={`rounded-xl px-5 py-2.5 text-[11px] font-medium transition ${
+              className={`rounded-xl px-3 sm:px-5 py-2 sm:py-2.5 text-[10px] sm:text-[11px] font-medium transition flex-1 sm:flex-none ${
                 period === "yearly"
                   ? "bg-white text-black"
                   : "text-white/50 hover:text-white"
@@ -329,19 +328,19 @@ export default function Pricing({
 
       {/* Errors */}
       {paymentError && (
-        <div className="rounded-3xl border border-red-500/20 bg-red-500/[0.04] px-5 py-4 text-[11px] text-red-200 backdrop-blur-xl">
+        <div className="rounded-2xl sm:rounded-3xl border border-red-500/20 bg-red-500/[0.04] px-4 sm:px-5 py-3 sm:py-4 text-[10px] sm:text-[11px] text-red-200 backdrop-blur-xl">
           {paymentError}
         </div>
       )}
 
       {planError && (
-        <div className="rounded-3xl border border-amber-500/20 bg-amber-500/[0.04] px-5 py-4 text-[11px] text-amber-100 backdrop-blur-xl">
+        <div className="rounded-2xl sm:rounded-3xl border border-amber-500/20 bg-amber-500/[0.04] px-4 sm:px-5 py-3 sm:py-4 text-[10px] sm:text-[11px] text-amber-100 backdrop-blur-xl">
           {planError}
         </div>
       )}
 
       {planLoading && (
-        <div className="rounded-3xl border border-white/10 bg-[#060B16]/95 px-5 py-4 text-[11px] text-white/45 backdrop-blur-xl">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/10 bg-[#060B16]/95 px-4 sm:px-5 py-3 sm:py-4 text-[10px] sm:text-[11px] text-white/45 backdrop-blur-xl">
           Loading your current plan...
         </div>
       )}
@@ -349,24 +348,24 @@ export default function Pricing({
       {/* Current Plan */}
       {isSubscribed &&
         currentPlan && (
-          <div className="flex flex-col gap-4 rounded-[28px] border border-emerald-500/15 bg-emerald-500/[0.04] p-5 backdrop-blur-2xl md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10">
+          <div className="flex flex-col gap-3 sm:gap-4 rounded-2xl sm:rounded-[28px] border border-emerald-500/15 bg-emerald-500/[0.04] p-4 sm:p-5 backdrop-blur-2xl md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+              <div className="flex h-10 sm:h-12 w-10 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-emerald-500/10">
                 <Crown
-                  size={18}
+                  size={16}
                   className="text-emerald-300"
                 />
               </div>
 
-              <div>
-                <h3 className="text-[14px] font-semibold text-white">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-[14px] font-semibold text-white truncate">
                   Current Plan:{" "}
                   {currentPlan.plan
                     ?.name ||
                     "Active Plan"}
                 </h3>
 
-                <p className="mt-1 text-[10.5px] text-white/45">
+                <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10.5px] text-white/45 truncate">
                   Status:{" "}
                   {currentPlan.status} •
                   Expires on{" "}
@@ -392,7 +391,7 @@ export default function Pricing({
                   )
                 );
               }}
-              className="flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-5 text-[11px] font-medium text-white transition hover:bg-white/[0.06]"
+              className="flex h-10 sm:h-11 items-center justify-center rounded-xl sm:rounded-2xl border border-white/10 bg-white/[0.03] px-4 sm:px-5 text-[10px] sm:text-[11px] font-medium text-white transition hover:bg-white/[0.06] whitespace-nowrap shrink-0"
             >
               Manage Billing
             </button>
@@ -400,7 +399,7 @@ export default function Pricing({
         )}
 
       {/* Plans */}
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan, index) => {
           const popular =
             index === 1;
@@ -408,14 +407,14 @@ export default function Pricing({
           return (
             <div
               key={plan._id}
-              className={`relative overflow-hidden rounded-[32px] border backdrop-blur-2xl transition-all duration-300 ${
+              className={`relative overflow-hidden rounded-2xl sm:rounded-3xl border backdrop-blur-2xl transition-all duration-300 ${
                 currentPlanId ===
                 plan._id
                   ? "border-indigo-500/30 bg-indigo-500/[0.04]"
                   : "border-white/10 bg-[#060B16]/95"
               } ${
                 popular
-                  ? "scale-[1.02]"
+                  ? "md:scale-[1.02]"
                   : ""
               }`}
             >
@@ -424,26 +423,26 @@ export default function Pricing({
 
               {/* Popular Badge */}
               {popular && (
-                <div className="absolute right-5 top-5 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-[10px] font-medium text-indigo-200">
+                <div className="absolute right-3 sm:right-5 top-3 sm:top-5 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2.5 sm:px-3 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-medium text-indigo-200">
                   Most Popular
                 </div>
               )}
 
-              <div className="relative p-6">
+              <div className="relative p-4 sm:p-6">
                 {/* Head */}
-                <div className="border-b border-white/10 pb-5">
+                <div className="border-b border-white/10 pb-4 sm:pb-5">
                   <div className="flex items-center gap-2">
                     <ShieldCheck
                       size={15}
-                      className="text-white/45"
+                      className="text-white/45 shrink-0"
                     />
 
-                    <h3 className="text-[16px] font-semibold text-white">
+                    <h3 className="text-sm sm:text-[16px] font-semibold text-white truncate">
                       {plan.name}
                     </h3>
                   </div>
 
-                  <p className="mt-2 text-[10.5px] leading-relaxed text-white/40">
+                  <p className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10.5px] leading-relaxed text-white/40">
                     {plan.storageLimit} GB
                     storage •{" "}
                     {
@@ -452,15 +451,15 @@ export default function Pricing({
                     GB bandwidth
                   </p>
 
-                  <div className="mt-6 flex items-end gap-2">
-                    <span className="text-[34px] font-semibold tracking-tight text-white">
+                  <div className="mt-4 sm:mt-6 flex items-end gap-1 sm:gap-2">
+                    <span className="text-2xl sm:text-[34px] font-semibold tracking-tight text-white">
                       {formatPrice(
                         plan.monthlyPrice,
                         period
                       ).split("/")[0]}
                     </span>
 
-                    <span className="pb-1 text-[11px] text-white/40">
+                    <span className="pb-0.5 sm:pb-1 text-[10px] sm:text-[11px] text-white/40">
                       /
                       {period ===
                       "monthly"
@@ -471,22 +470,22 @@ export default function Pricing({
                 </div>
 
                 {/* Features */}
-                <div className="mt-6 space-y-3">
+                <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
                   {defaultFeatures(
                     plan.name
                   ).map((feature) => (
                     <div
                       key={feature}
-                      className="flex items-center gap-3"
+                      className="flex items-start gap-2 sm:gap-3"
                     >
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10">
+                      <div className="flex h-4 sm:h-5 w-4 sm:w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 mt-0.5">
                         <Check
-                          size={11}
+                          size={10}
                           className="text-emerald-300"
                         />
                       </div>
 
-                      <span className="text-[11px] text-white/70">
+                      <span className="text-[10px] sm:text-[11px] text-white/70">
                         {feature}
                       </span>
                     </div>
@@ -494,7 +493,7 @@ export default function Pricing({
                 </div>
 
                 {/* CTA */}
-                <div className="mt-8 space-y-3">
+                <div className="mt-6 sm:mt-8 space-y-2 sm:space-y-3">
                   <button
                     onClick={() =>
                       handleBuy(plan)
@@ -504,7 +503,7 @@ export default function Pricing({
                         plan._id ||
                       isSubscribed
                     }
-                    className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-[11px] font-semibold transition ${
+                    className={`flex h-10 sm:h-12 w-full items-center justify-center gap-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-semibold transition ${
                       currentPlanId ===
                         plan._id &&
                       isSubscribed
@@ -520,7 +519,8 @@ export default function Pricing({
                           className="animate-spin"
                         />
 
-                        Starting...
+                        <span className="hidden sm:inline">Starting...</span>
+                        <span className="sm:hidden">...</span>
                       </>
                     ) : currentPlanId ===
                         plan._id &&
@@ -554,7 +554,7 @@ export default function Pricing({
                         )
                       );
                     }}
-                    className="flex h-11 w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[11px] font-medium text-white transition hover:bg-white/[0.06]"
+                    className="flex h-10 sm:h-11 w-full items-center justify-center rounded-xl sm:rounded-2xl border border-white/10 bg-white/[0.03] text-[10px] sm:text-[11px] font-medium text-white transition hover:bg-white/[0.06]"
                   >
                     Contact Sales
                   </button>
@@ -564,7 +564,7 @@ export default function Pricing({
                 {currentPlanId ===
                   plan._id &&
                   isSubscribed && (
-                    <div className="mt-4 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.05] px-4 py-3 text-center text-[10.5px] text-indigo-200">
+                    <div className="mt-3 sm:mt-4 rounded-xl sm:rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.05] px-3 sm:px-4 py-2 sm:py-3 text-center text-[9.5px] sm:text-[10.5px] text-indigo-200">
                       Your active subscription
                     </div>
                   )}
@@ -575,8 +575,8 @@ export default function Pricing({
       </div>
 
       {/* Footer */}
-      <div className="rounded-[28px] border border-white/10 bg-[#060B16]/95 px-6 py-5 text-center backdrop-blur-2xl">
-        <p className="text-[10.5px] leading-relaxed text-white/40">
+      <div className="rounded-xl sm:rounded-[28px] border border-white/10 bg-[#060B16]/95 px-4 sm:px-6 py-4 sm:py-5 text-center backdrop-blur-2xl">
+        <p className="text-[9.5px] sm:text-[10.5px] leading-relaxed text-white/40">
           All plans include secure uploads,
           encrypted storage, resumable
           transfers, and real-time upload

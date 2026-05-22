@@ -1,7 +1,6 @@
 import {
   Activity,
   CheckCircle2,
-  AlertTriangle,
   HardDrive,
   BarChart3,
   Rocket,
@@ -134,9 +133,9 @@ export default function UserDashboard({
     currentPlan?.plan?.monthlyPrice ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
         <StatCard
           label="Total uploads"
           value={totalUploads}
@@ -197,7 +196,7 @@ export default function UserDashboard({
       </div>
 
       {/* Top Section */}
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
         {/* Upload Panel */}
         <UploadPanel
           {...uploadControls}

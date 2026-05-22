@@ -30,31 +30,31 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex h-full w-64 flex-col border-r border-white/10 bg-[#060B16]/95 backdrop-blur-2xl transition-transform duration-300 ease-out lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-40 flex h-full w-56 sm:w-64 flex-col border-r border-white/10 bg-[#060B16]/95 backdrop-blur-2xl transition-transform duration-300 ease-out lg:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
       {/* Top Brand */}
-      <div className="border-b border-white/10 px-5 py-5">
+      <div className="border-b border-white/10 px-3 sm:px-5 py-4 sm:py-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/20 via-sky-400/10 to-cyan-400/20 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="relative flex h-10 sm:h-11 w-10 sm:w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/20 via-sky-400/10 to-cyan-400/20 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
               <div className="absolute inset-0 bg-white/[0.03]" />
-              <Cloud size={19} className="relative text-white" />
+              <Cloud size={18} className="relative text-white" />
             </div>
 
-            <div>
-              <h2 className="text-sm font-semibold tracking-wide text-white">
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-semibold tracking-wide text-white truncate">
                 CloudDock
               </h2>
-              <p className="text-[10px] tracking-wide text-white/40">
+              <p className="text-[9px] sm:text-[10px] tracking-wide text-white/40 truncate">
                 Premium upload suite
               </p>
             </div>
           </div>
 
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/10 hover:text-white lg:hidden"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/10 hover:text-white lg:hidden"
             onClick={onClose}
             aria-label="Close sidebar"
           >
@@ -64,14 +64,14 @@ export default function Sidebar({
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-5">
-        <div className="mb-3 px-3">
-          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/30">
+      <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-5">
+        <div className="mb-3 px-2 sm:px-3">
+          <p className="text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.18em] text-white/30">
             Navigation
           </p>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-1 sm:space-y-2">
           {navItems
             .filter((item) => !item.adminOnly || role === "admin")
             .map((item) => {
@@ -99,7 +99,7 @@ export default function Sidebar({
 
                     if (onClose) onClose();
                   }}
-                  className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border px-3 py-2.5 text-left text-[12px] font-medium tracking-[0.01em] transition-all duration-200 ${
+                  className={`group relative flex w-full items-center gap-2 sm:gap-3 overflow-hidden rounded-xl border px-2 sm:px-3 py-2 sm:py-2.5 text-left text-[11px] sm:text-[12px] font-medium tracking-[0.01em] transition-all duration-200 ${
                     isActive
                       ? "border-indigo-500/30 bg-gradient-to-r from-indigo-500/20 to-sky-500/10 text-white shadow-[0_0_25px_rgba(99,102,241,0.12)]"
                       : "border-transparent text-white/55 hover:border-white/10 hover:bg-white/[0.04] hover:text-white"

@@ -26,33 +26,33 @@ export default function Header({
 }) {
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-[#060B16]/80 backdrop-blur-2xl">
-      <div className="flex h-[68px] items-center justify-between px-4 lg:px-6">
+      <div className="flex h-14 min-h-[56px] items-center justify-between gap-2 px-3 sm:h-[68px] sm:px-4 lg:px-6">
         {/* Left Section */}
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           {/* Mobile Sidebar Button */}
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/[0.06] hover:text-white lg:hidden"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/[0.06] hover:text-white lg:hidden"
             onClick={onOpenSidebar}
           >
             <Menu size={16} />
           </button>
 
           {/* Heading */}
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-white/30">
+          <div className="flex min-w-0 flex-col">
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.18em] text-white/30">
               Dashboard
             </span>
 
-            <h2 className="text-[15px] font-semibold tracking-[0.01em] text-white">
-              Welcome back, {user.name}
+            <h2 className="truncate text-[13px] sm:text-[15px] font-semibold tracking-[0.01em] text-white">
+              Welcome, {user.name?.split(' ')[0]}
             </h2>
           </div>
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           {/* Search */}
-          <div className="relative hidden md:block">
+          <div className="relative hidden lg:block">
             <Search
               size={13}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-white/35"
@@ -60,22 +60,22 @@ export default function Header({
 
             <input
               placeholder="Search..."
-              className="h-10 w-52 rounded-2xl border border-white/10 bg-white/[0.03] pl-9 pr-3 text-[11px] text-white/70 outline-none transition placeholder:text-white/30 focus:border-indigo-500/30 focus:bg-white/[0.05]"
+              className="h-10 w-40 xl:w-52 rounded-2xl border border-white/10 bg-white/[0.03] pl-9 pr-3 text-[11px] text-white/70 outline-none transition placeholder:text-white/30 focus:border-indigo-500/30 focus:bg-white/[0.05]"
             />
           </div>
 
-          {/* Upload Button */}
+          {/* Upload Button - Hidden on mobile */}
           <Button
             variant="outline"
             size="sm"
-            className="h-10 rounded-2xl border-white/10 bg-white/[0.03] px-4 text-[11px] font-medium text-white hover:bg-white/[0.06]"
+            className="hidden sm:flex h-10 rounded-2xl border-white/10 bg-white/[0.03] px-3 sm:px-4 text-[10px] sm:text-[11px] font-medium text-white hover:bg-white/[0.06]"
           >
             <Plus size={13} />
-            New Upload
+            <span className="hidden md:inline">New Upload</span>
           </Button>
 
           {/* Notification */}
-          <button className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/[0.06] hover:text-white">
+          <button className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/[0.06] hover:text-white">
             <Bell size={15} />
 
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-400" />
@@ -83,7 +83,7 @@ export default function Header({
 
           {/* Theme Toggle */}
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/[0.06] hover:text-white"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:bg-white/[0.06] hover:text-white"
             onClick={onToggleTheme}
           >
             {theme === "dark" ? (
@@ -96,9 +96,9 @@ export default function Header({
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex h-10 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-2 pr-3 text-white/80 transition hover:bg-white/[0.05]">
+              <button className="flex h-10 shrink-0 items-center gap-1 sm:gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-1 sm:px-2 pr-2 sm:pr-3 text-white/80 transition hover:bg-white/[0.05]">
                 {/* Avatar */}
-                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500/30 to-cyan-400/20 text-[10px] font-semibold text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500/30 to-cyan-400/20 text-[10px] font-semibold text-white">
                   {user.pfp ? (
                     <img
                       src={user.pfp}
@@ -111,19 +111,19 @@ export default function Header({
                 </div>
 
                 {/* User Info */}
-                <div className="hidden text-left md:block">
-                  <p className="text-[11px] font-medium leading-none text-white">
-                    {user.name}
+                <div className="hidden text-left sm:block">
+                  <p className="text-[10px] sm:text-[11px] font-medium leading-none text-white">
+                    {user.name?.split(' ')[0]}
                   </p>
 
-                  <span className="text-[10px] text-white/35">
+                  <span className="text-[9px] sm:text-[10px] text-white/35">
                     {user.role}
                   </span>
                 </div>
 
                 <ChevronDown
                   size={13}
-                  className="hidden text-white/30 md:block"
+                  className="hidden text-white/30 sm:block"
                 />
               </button>
             </DropdownMenuTrigger>
